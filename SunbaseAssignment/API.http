@@ -1,0 +1,113 @@
+### Get the access token
+POST https://qa.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "login_id": "test@sunbasedata.com",
+  "password": "Test@123"
+}
+
+### Get customer list via token
+GET https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list
+Authorization: Bearer dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM=
+
+### New registration
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "n@gmail.com",
+  "password": "1234",
+  "firstName": "Nikhil",
+  "lastName": "Taprania",
+  "phone": "9719768185",
+  "customerAddress": {
+    "street": "Street-1",
+    "address": "House No. 1",
+    "city": "MZN",
+    "state": "UP"
+  }
+}
+
+### Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "n@gmail.com",
+  "password": "1234"
+}
+
+### Save Customer
+POST http://localhost:8080/customers/save
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer
+
+{
+  "email": "l@gmail.com",
+  "password": "1234",
+  "firstName": "Nikhil",
+  "lastName": "Taprania",
+  "phone": "9719768185",
+  "customerAddress": {
+    "street": "Street-1",
+    "address": "House No. 1",
+    "city": "MZN",
+    "state": "UP"
+  }
+}
+
+### Update a customer
+PUT http://localhost:8080/customers/update
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer
+
+{
+  "customerId": 2,
+  "email": "shani@gmail.com",
+  "password": "1234",
+  "firstName": "Shani",
+  "lastName": "Taprania",
+  "phone": "9719768185",
+  "customerAddress": {
+    "street": "Street-1",
+    "address": "House No. 1",
+    "city": "MZN",
+    "state": "UP"
+  }
+}
+
+### Delete a customer
+DELETE http://localhost:8080/customers/delete?customerId=3
+Accept: application/json
+Authorization: Bearer
+
+### Get a customer by customer id
+GET http://localhost:8080/customers/getById?customerId=2
+Accept: application/json
+Authorization: Bearer
+
+### Get a customer by customer email
+GET http://localhost:8080/customers/getByEmail?email=nikhil@gmail.com
+Accept: application/json
+Authorization: Bearer
+
+### Get all customers
+GET http://localhost:8080/customers/all
+Accept: application/json
+Authorization: Bearer
+
+### Get logged in customer
+GET http://localhost:8080/customers/current
+Accept: application/json
+Authorization: Bearer
+
+### Get customers pagewise
+GET http://localhost:8080/customers/getPageWise/1/2
+Accept: application/json
+Authorization: Bearer

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Customers</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            /* Match the width of the customer table */
+            margin: 0 auto;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Enhanced shadow */
+            border-radius: 8px;
+            /* Rounded corners */
+            margin-bottom: 20px;
+            /* Space below navbar */
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-left {
+            font-size: 18px;
+            margin-left: 50px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            margin-right: 50px;
+        }
+
+        #logoutBtn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        #logoutBtn:hover {
+            background-color: #d32f2f;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 8px 14px;
+            background-color: #007bff;
+            /* Default color for Add Customer button */
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button.cancel {
+            background-color: #f44336;
+            /* Red color for Cancel button */
+            color: white;
+            border: none;
+        }
+
+        button.cancel:hover {
+            background-color: #e53935;
+            /* Darker red for Cancel button on hover */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            /* Darker blue for Add Customer button on hover */
+            transform: scale(1.05);
+            /* Slightly enlarge button on hover */
+        }
+
+        select,
+        input[type="text"],
+        input[type="email"] {
+            padding: 6px;
+            margin: 0 30px 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+            width: 180px;
+            /* Set a fixed width for small inputs */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background-color: #343a40;
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .edit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        #paginationControls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #paginationControls button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #paginationControls button:hover {
+            background-color: #0056b3;
+        }
+
+        #paginationControls button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #pageInfo {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-container">
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <span id="userName"></span>
+            </div>
+            <div class="navbar-right">
+                <button id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div class="container">
+    <div class="actions">
+        <button id="addCustomerBtn">Add Customer</button>
+        <button id="syncBtn">Sync</button>
+        <div>
+            <label for="searchBy"></label><select id="searchBy">
+            <option value="">Search By</option>
+            <option value="firstName">First Name</option>
+            <option value="city">City</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+        </select>
+            <label for="searchBar"></label><input class="hidden" id="searchBar" placeholder="Search..." type="text">
+            <button class="hidden" id="searchBtn">Search</button>
+        </div>
+    </div>
+
+    <div class="form hidden" id="customerForm">
+        <form id="addCustomer">
+            <h3 id="formTitle">Add Customer</h3>
+            <input id="customerId" type="hidden"> <!-- Hidden field to store customer ID for editing -->
+            <label for="firstName">First Name:</label>
+            <input id="firstName" name="firstName" required type="text">
+            <label for="lastName">Last Name:</label>
+            <input id="lastName" name="lastName" required type="text">
+            <label for="street">Street:</label>
+            <input id="street" name="street" required type="text">
+            <label for="address">Address:</label>
+            <input id="address" name="address" required type="text">
+            <label for="city">City:</label>
+            <input id="city" name="city" required type="text">
+            <label for="state">State:</label>
+            <input id="state" name="state" required type="text">
+            <label for="email">Email:</label>
+            <input id="email" name="email" required type="email">
+            <label for="phone">Phone:</label>
+            <input id="phone" name="phone" required type="text">
+            <button type="submit">Save Customer</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Street</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="customerTable">
+        <!-- Customer rows will be dynamically added here -->
+        </tbody>
+    </table>
+
+    <div id="paginationControls">
+        <button onclick="previousPage()">Previous</button>
+        <span id="pageInfo"></span>
+        <button onclick="nextPage()">Next</button>
+    </div>
+</div>
+
+<script>
+    // Constants
+    const apiUrl = 'http://localhost:8080/customers';
+    const jwtToken = localStorage.getItem('jwtToken');
+    const pageSize = 6; // Number of customers per page
+    let currentPage = 0; // Current page number
+    let globalCustomers;
+
+    // DOM Elements
+    const customerForm = document.getElementById('customerForm');
+    const addCustomerBtn = document.getElementById('addCustomerBtn');
+    const formTitle = document.getElementById('formTitle');
+    const addCustomerForm = document.getElementById('addCustomer');
+    const searchBySelect = document.getElementById('searchBy');
+    const searchBar = document.getElementById('searchBar');
+    const searchBtn = document.getElementById('searchBtn');
+    const customerTable = document.getElementById('customerTable');
+    const paginationControls = document.getElementById('paginationControls');
+    const pageInfo = document.getElementById('pageInfo');
+
+    // Initialize page
+    initializePage();
+
+    function initializePage() {
+        // Event listeners for various UI components
+        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        searchBySelect.addEventListener('change', toggleSearch);
+        addCustomerBtn.addEventListener('click', toggleCustomerForm);
+        addCustomerForm.addEventListener('submit', handleFormSubmit);
+        document.getElementById('syncBtn').addEventListener('click', syncCustomers);
+
+        // Fetch user information
+        fetchUserName().then();
+        // Fetch and display customers for the initial page
+        fetchAndDisplayCustomers().then();
+    }
+
+    // Logout function
+    function handleLogout() {
+        if (confirm("Are you sure you want to log out?")) {
+            logout();
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('jwtToken');
+        window.location.href = '/login-signup';
+    }
+
+    function isTokenExpired(token) {
+        if (!token) return true;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const now = Math.floor(Date.now() / 1000);
+            return payload.exp < now;
+        } catch (e) {
+            return true;
+        }
+    }
+
+    if (!jwtToken || isTokenExpired(jwtToken)) {
+        alert('Session expired. Please log in again.');
+        logout();
+    }
+
+    async function fetchUserName() {
+        try {
+            const response = await fetch(`${apiUrl}/current`, {
+                method: 'GET', headers: {'Authorization': `Bearer ${jwtToken}`}
+            });
+
+            const result = await response.json();
+            if (result.status === 200) {
+                document.getElementById('userName').textContent = `Welcome, ${result.data.firstName} ${result.data.lastName}`;
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('An error occurred while fetching user information.');
+            console.error(error);
+        }
+    }
+
+    function toggleCustomerForm() {
+        customerForm.classList.toggle('hidden');
+        if (customerForm.classList.contains('hidden')) {
+            addCustomerBtn.textContent = 'Add Customer';
+            addCustomerBtn.classList.remove('cancel');
+            resetForm();
+        } else {
+            addCustomerBtn.textContent = 'Cancel';
+            addCustomerBtn.classList.add('cancel');
+        }
+    }
+
+    function toggleSearch() {
+        if (this.value === "") {
+            searchBar.classList.add('hidden');
+            searchBtn.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+            searchBtn.classList.remove('hidden');
+        }
+    }
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(addCustomerForm);
+        const customerId = document.getElementById('customerId').value;
+        const isEdit = !!customerId;
+
+        const customer = {
+            customerId: isEdit ? customerId : undefined,
+            email: formData.get('email'),
+            password: formData.get('password') || '',  // Include password if needed
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            phone: formData.get('phone'),
+            customerAddress: {
+                street: formData.get('street'),
+                address: formData.get('address'),
+                city: formData.get('city'),
+                state: formData.get('state')
+            }
+        };
+
+        try {
+            const response = await fetch(`${apiUrl}/${isEdit ? 'update' : 'save'}`, {
+                method: isEdit ? 'PUT' : 'POST', headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Accept': 'application/json'
+                }, body: JSON.stringify(customer)
+            });
+
+            if (response.ok) {
+                await response.json();
+                alert(`Customer ${isEdit ? 'updated' : 'added'} successfully!`);
+                customerForm.classList.add('hidden');
+                addCustomerBtn.textContent = 'Add Customer';
+                addCustomerBtn.classList.remove('cancel');
+                resetForm();
+                await fetchAndDisplayCustomers(); // Refresh customer list after adding/updating
+            } else {
+                const errorResult = await response.json();
+                alert(errorResult.message);
+            }
+        } catch (error) {
+            alert('An error occurred while saving the customer.');
+            console.error(error);
+        }
+    }
+
+    // Add event listener for search button
+    searchBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        searchCustomers().then();
+    });
+
+    // Search function based on selected criteria
+    async function searchCustomers() {
+        const searchBy = searchBySelect.value;
+        const query = searchBar.value.toLowerCase();
+
+
+        try {
+
+            if (query) {
+                let filteredCustomers = globalCustomers.filter(customer => {
+                    const value = (customer[searchBy] || '').toString().toLowerCase();
+                    return value.includes(query);
+                });
+
+                displayCustomers(filteredCustomers);
+            }
+            // Reset pagination controls
+            document.getElementById('paginationControls').innerHTML = '';
+        } catch (error) {
+            alert('An error occurred while searching customers.');
+            console.error(error);
+        }
+    }
+
+    async function fetchAndDisplayCustomers() {
+        try {
+            const localResponse = await fetch(`${apiUrl}/all`, {
+                method: 'GET', headers: {'Authorization': `Bearer ${jwtToken}`}
+            });
+
+            const sunbaseResponse = await fetch('https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list', {
+                method: 'GET', headers: {'Authorization': `Bearer ${localStorage.getItem('access_token')}`}
+            });
+
+            let localCustomers = await localResponse.json();
+            let sunbaseCustomers = await sunbaseResponse.json();
+            let totalCustomers = [...localCustomers.data, ...sunbaseCustomers];
+            globalCustomers = totalCustomers;
+
+            // Handle pagination
+            const paginatedCustomers = paginateCustomers(totalCustomers, currentPage, pageSize);
+            displayCustomers(paginatedCustomers);
+
+            // Update pagination controls
+            updatePaginationControls(totalCustomers.length);
+            return totalCustomers;
+        } catch (error) {
+            alert('An error occurred while fetching customers.');
+            console.error(error);
+        }
+    }
+
+    function paginateCustomers(customers, pageNo, pageSize) {
+        const start = pageNo * pageSize;
+        const end = start + pageSize;
+        return customers.slice(start, end);
+    }
+
+    function displayCustomers(customers) {
+        customerTable.innerHTML = '';
+
+        customers.forEach(customer => {
+            const hasId = customer.customerId;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${customer.firstName || customer.first_name}</td>
+            <td>${customer.lastName || customer.last_name}</td>
+            <td>${customer.street}</td>
+            <td>${customer.address}</td>
+            <td>${customer.city}</td>
+            <td>${customer.state}</td>
+            <td>${customer.email}</td>
+            <td>${customer.phone}</td>
+            <td>
+                ${hasId ? `
+                    <button class="action-btn edit-btn" onclick="editCustomer(${customer.customerId})">Edit</button>
+                    <button class="action-btn delete-btn" onclick="deleteCustomer(${customer.customerId})">Delete</button>
+                ` : ''}
+            </td>
+        `;
+            customerTable.appendChild(row);
+        });
+    }
+
+    function updatePaginationControls(totalCustomers) {
+        pageInfo.textContent = `Page ${currentPage + 1}`;
+        paginationControls.querySelector('button:first-child').disabled = currentPage === 0;
+        paginationControls.querySelector('button:last-child').disabled = (currentPage + 1) * pageSize >= totalCustomers;
+    }
+
+    function resetForm() {
+        document.getElementById('customerId').value = '';
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('street').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('city').value = '';
+        document.getElementById('state').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('phone').value = '';
+        formTitle.textContent = 'Add Customer';
+    }
+
+    async function syncCustomers(e) {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:8080/customers/sync', {
+                method: 'GET', headers: {'Authorization': `Bearer ${jwtToken}`}
+            });
+
+            const result = await response.json();
+            if (result.status === 201) {
+                alert(result.message);
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('An error occurred while syncing customers.');
+            console.error(error);
+        }
+    }
+
+    window.editCustomer = function (customerId) {
+        fetch(`${apiUrl}/getById?customerId=${customerId}`, {
+            method: 'GET', headers: {'Authorization': `Bearer ${jwtToken}`}
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 200) {
+                    const customer = result.data;
+                    document.getElementById('customerId').value = customer.customerId;
+                    document.getElementById('firstName').value = customer.firstName;
+                    document.getElementById('lastName').value = customer.lastName;
+                    document.getElementById('street').value = customer.street;
+                    document.getElementById('address').value = customer.address;
+                    document.getElementById('city').value = customer.city;
+                    document.getElementById('state').value = customer.state;
+                    document.getElementById('email').value = customer.email;
+                    document.getElementById('phone').value = customer.phone;
+
+                    formTitle.textContent = 'Edit Customer';
+                    customerForm.classList.remove('hidden');
+                    addCustomerBtn.textContent = 'Cancel';
+                    addCustomerBtn.classList.add('cancel');
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(error => {
+                alert('An error occurred while fetching customer details.');
+                console.error(error);
+            });
+    };
+
+    window.deleteCustomer = async function (customerId) {
+        if (!confirm("Are you sure you want to delete this customer?")) return;
+
+        try {
+            const response = await fetch(`${apiUrl}/delete?customerId=${customerId}`, {
+                method: 'DELETE', headers: {
+                    'Authorization': `Bearer ${jwtToken}`, 'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('Customer deleted successfully!');
+                await fetchAndDisplayCustomers(); // Refresh customer list after deletion
+            } else {
+                const result = await response.json();
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('An error occurred while deleting the customer.');
+            console.error(error);
+        }
+    };
+
+
+    function previousPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            fetchAndDisplayCustomers().then();
+        }
+    }
+
+    function nextPage() {
+        currentPage++;
+        fetchAndDisplayCustomers().then();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Customers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .form {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        p {
+            margin-top: 15px;
+        }
+
+        span {
+            color: #007bff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form" id="loginForm">
+        <h2>Login</h2>
+        <form id="login">
+            <label for="loginEmail"></label>
+            <input id="loginEmail" placeholder="Email" required type="email">
+            <label for="loginPassword"></label>
+            <input id="loginPassword" placeholder="Password" required type="password">
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <span onclick="toggleForm()">Sign up</span></p>
+    </div>
+
+    <div class="form hidden" id="signupForm">
+        <h2>Sign Up</h2>
+        <form id="signup">
+            <label for="firstName"></label><input id="firstName" placeholder="First Name" required type="text">
+            <label for="lastName"></label><input id="lastName" placeholder="Last Name" required type="text">
+            <label for="signupEmail"></label><input id="signupEmail" placeholder="Email" required type="email">
+            <label for="signupPassword"></label><input id="signupPassword" placeholder="Password" required
+                                                       type="password">
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <span onclick="toggleForm()">Login</span></p>
+    </div>
+</div>
+
+<script>
+    function toggleForm() {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        loginForm.classList.toggle('hidden');
+        signupForm.classList.toggle('hidden');
+    }
+
+
+    const apiUrl = 'http://localhost:8080/auth';
+
+    document.getElementById('login').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const response = await fetch(`${apiUrl}/login`, {
+                method: 'POST', headers: {
+                    'Content-Type': 'application/json'
+                }, body: JSON.stringify({email, password})
+            });
+
+            const result = await response.json();
+
+            if (result.status === 200) {
+                localStorage.setItem('jwtToken', result.jwtToken);
+                await getAccessToken();
+                // window.location.href = '/index';
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('An error occurred during login.');
+            console.error(error);
+        }
+
+        // Get access token and save to local storage
+        async function getAccessToken() {
+            const url = 'https://qa.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp';
+            const data = {
+                login_id: "test@sunbasedata.com", password: "Test@123"
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', headers: {
+                        'Content-Type': 'application/json', 'Accept': 'application/json'
+                    }, body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                localStorage.setItem('access_token', result.access_token);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    });
+
+
+    document.getElementById('signup').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+
+        try {
+            const response = await fetch(`${apiUrl}/register`, {
+                method: 'POST', headers: {
+                    'Content-Type': 'application/json'
+                }, body: JSON.stringify({firstName, lastName, email, password})
+            });
+
+            const result = await response.json();
+
+            if (result.status === 201) {
+                alert(result.message);
+                window.location.href = "/login-signup";
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('An error occurred during signup.');
+            console.error(error);
+        }
+    });
+</script>
+</body>
+</html>
