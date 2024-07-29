@@ -122,7 +122,7 @@
             if (result.status === 200) {
                 localStorage.setItem('jwtToken', result.jwtToken);
                 await getAccessToken();
-                // window.location.href = '/index';
+                location.href = '/index';
             } else {
                 alert(result.message);
             }

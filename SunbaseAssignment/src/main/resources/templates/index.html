@@ -538,10 +538,11 @@
             row.innerHTML = `
             <td>${customer.firstName || customer.first_name}</td>
             <td>${customer.lastName || customer.last_name}</td>
-            <td>${customer.street}</td>
-            <td>${customer.address}</td>
-            <td>${customer.city}</td>
-            <td>${customer.state}</td>
+            <td>${customer.street || customer.customerAddress?.street || ''}</td>
+            <td>${customer.address || customer.customerAddress?.address || ''}</td>
+            <td>${customer.city || customer.customerAddress?.city || ''}</td>
+            <td>${customer.state || customer.customerAddress?.state || ''}</td>
+
             <td>${customer.email}</td>
             <td>${customer.phone}</td>
             <td>

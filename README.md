@@ -31,8 +31,7 @@ The Customer Management System is a comprehensive web application designed to ef
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/customer-management-system.git
-   cd customer-management-system
+   https://github.com/nikhiltaprania/sunbase-assignment
 2. **Set Up the Database**
 - Create a MySQL database and update the database credentials in the `application.properties` file.
 
@@ -44,14 +43,124 @@ The Customer Management System is a comprehensive web application designed to ef
 4. **Access the Application**
 - Open your web browser and navigate to http://localhost:8080 to access the application.
 
-### Usage
-- Login/Register: Use the login screen to authenticate users or register new accounts.
-- Customer List: View and manage customer data. Use the sync button to fetch and update customer data from a remote API.
-- Add Customer: Click on the "Add Customer" button to open a form for adding new customers.
-- Edit Customer: Click on the "Edit" button next to a customer to modify their details.
-- Delete Customer: Click on the "Delete" button to remove a customer from the database.
-- Search: Use the search functionality to filter customers based on criteria like first name, city, email, and phone.
-- Syncing Customer Data
-- Sync Button: Located on the customer list screen, this button fetches customer data from a remote API and updates your database. If a customer already exists, their details are updated rather than creating a duplicate entry.
+## Usage
+### Register a New User
+
+**POST** `http://localhost:8080/auth/register`
+
+**Headers:**
+- Content-Type: application/json
+- Accept: application/json
+
+**Body:**
+```json
+{
+  "email": "test@sunbasedata.com",
+  "password": "Test@123",
+  "firstName": "Nikhil",
+  "lastName": "Taprania",
+  "phone": "9719768185",
+  "customerAddress": {
+    "street": "Street-1",
+    "address": "House No. 1",
+    "city": "MZN",
+    "state": "UP"
+  }
+}
+```
+![Registration](/SunbaseAssignment/src/main/resources/static/project-images/registration.png)
+
+### Login
+**POST** `http://localhost:8080/auth/login`
+
+**Headers:**
+- Content-Type: application/json
+- Accept: application/json
+
+**Body:**
+```json
+{
+  "email": "test@sunbasedata.com",
+  "password": "Test@123"
+}
+```
+![Login](/SunbaseAssignment/src/main/resources/static/project-images/login.png)
+
+### Add New Customer
+
+**POST** `http://localhost:8080/customers/save`
+
+**Headers:**
+- Content-Type: application/json
+- Accept: application/json
+- Authorization: Bearer [Your_JWT_Token_Here]
+
+**Body:**
+```json
+{
+  "email": "l@gmail.com",
+  "password": "1234",
+  "firstName": "Nikhil",
+  "lastName": "Taprania",
+  "phone": "9719768185",
+  "customerAddress": {
+    "street": "Street-1",
+    "address": "House No. 1",
+    "city": "MZN",
+    "state": "UP"
+  }
+}
+```
+![Save new Customer](/SunbaseAssignment/src/main/resources/static/project-images/add.png)
+
+### Edit a Customer
+
+**PUT** `http://localhost:8080/customers/update`
+
+**Headers:**
+- Content-Type: application/json
+- Accept: application/json
+- Authorization: Bearer [Your_JWT_Token_Here]
+
+**Body:**
+```json
+{
+  "customerId": 2,
+  "email": "shani@gmail.com",
+  "password": "1234",
+  "firstName": "Shani",
+  "lastName": "Taprania",
+  "phone": "9719768185",
+  "customerAddress": {
+    "street": "Street-1",
+    "address": "House No. 1",
+    "city": "MZN",
+    "state": "UP"
+  }
+}
+```
+![Update Customer with customerId](/SunbaseAssignment/src/main/resources/static/project-images/update.png)
+
+### Delete a Customer
+
+**DELETE** `http://localhost:8080/customers/delete?customerId=3`
+
+**Headers:**
+- Accept: application/json
+- Authorization: Bearer [Your_JWT_Token_Here]
+
+![Delete Customer with customerId](/SunbaseAssignment/src/main/resources/static/project-images/delete.png)
+
+### Search
+- Use the search functionality to filter customers based on criteria like first name, city, email, and phone. Designed in front-end
+
+![Search](/SunbaseAssignment/src/main/resources/static/project-images/search.png)
+
+### Sync Button And Pagination
+- Located on the customer list screen, this button fetches customer data from a remote API and updates your database. If a customer already exists, their details are updated rather than creating a duplicate entry.
+- Pagination functionality add
+
+![Sync & Pagination](/SunbaseAssignment/src/main/resources/static/project-images/sync.png)
+
 ## Contact
 For further suggestions, inquiries, or issues, please contact `nikhiltaprania@gmail.com` or visit my portfolio at https://nikhiltaprania.github.io.
