@@ -9,13 +9,13 @@ import java.util.Optional;
 public interface CustomerService {
     Customer saveCustomer(Customer customer);
 
-    Optional<Customer> getCustomerById(Integer customerId);
+    Optional<Customer> getCustomerById(String uuid);
 
     Optional<Customer> getCustomerByEmail(String email);
 
     Customer getLoggedInCustomer();
 
-    void deleteCustomer(Integer customerId);
+    void deleteCustomer(String uuid);
 
     List<Customer> getAllCustomers();
 

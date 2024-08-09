@@ -60,13 +60,14 @@ public class CustomerServiceImpl implements CustomerService {
     /**
      * Retrieves a customer by their ID and logs the operation.
      *
-     * @param customerId The ID of the customer to retrieve.
+     * @param uuid The ID of the customer to retrieve.
      * @return An optional containing the customer if found, otherwise empty.
      */
     @Override
-    public Optional<Customer> getCustomerById(Integer customerId) {
-        Optional<Customer> customer = customerRepository.findById(customerId);
-        log.info("Customer fetched by ID {}: {}", customerId, customer);
+    public Optional<Customer> getCustomerById(String uuid) {
+        Optional<Customer> customer = customerRepository.findById(uuid);
+        log.info("Customer fetched by ID {}: {}", uuid, customer);
+
         return customer;
     }
 
@@ -79,6 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Optional<Customer> getCustomerByEmail(String email) {
         Optional<Customer> customer = customerRepository.findByEmail(email);
+
         log.info("Customer fetched by email {}: {}", email, customer);
         return customer;
     }
@@ -101,13 +103,18 @@ public class CustomerServiceImpl implements CustomerService {
     /**
      * Deletes a customer by their ID and logs the operation.
      *
-     * @param customerId The ID of the customer to delete.
+     * @param uuid The ID of the customer to delete.
      */
     @Override
-    public void deleteCustomer(Integer customerId) {
-        customerRepository.findById(customerId).ifPresent(customer -> {
+    public void deleteCustomer(String uuid) {
+        customerRepository.findById(uuid).ifPresent(customer -> {
+
+            Customer loggedInCustomer = getLoggedInCustomer();
+            if (loggedInCustomer.getUuid().equals(customer.getUuid()))
+                throw new RuntimeException("Logged in customer cannot be deleted");
+
             customerRepository.delete(customer);
-            log.info("Customer deleted by ID: {}", customerId);
+            log.info("Customer deleted by ID: {}", uuid);
         });
     }
 
@@ -119,6 +126,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<Customer> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
+
         log.info("Fetched all customers. Total count: {}", customers.size());
         return customers;
     }
@@ -183,19 +191,21 @@ public class CustomerServiceImpl implements CustomerService {
 
         List<Customer> customers = rawList.stream().map(map -> {
             Customer customer = new Customer();
-            customer.setEmail((String) map.get("email"));
-            customer.setFirstName((String) map.get("first_name"));
-            customer.setLastName((String) map.get("last_name"));
-            customer.setPhone((String) map.get("phone"));
+            customer.setUuid(map.get("uuid").toString());
+            customer.setEmail(map.get("email").toString());
+            customer.setFirstName(map.get("first_name").toString());
+            customer.setLastName(map.get("last_name").toString());
+            customer.setPhone(map.get("phone").toString());
 
             CustomerAddress address = new CustomerAddress();
-            address.setStreet((String) map.get("street"));
-            address.setAddress((String) map.get("address"));
-            address.setCity((String) map.get("city"));
-            address.setState((String) map.get("state"));
+            address.setStreet(map.get("street").toString());
+            address.setAddress(map.get("address").toString());
+            address.setCity(map.get("city").toString());
+            address.setState(map.get("state").toString());
 
             customer.setCustomerAddress(address);
             return customer;
+
         }).collect(Collectors.toList());
 
         log.info("Fetched data from server. Number of customers: {}", customers.size());

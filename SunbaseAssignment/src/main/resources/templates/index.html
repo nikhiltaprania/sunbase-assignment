@@ -265,7 +265,7 @@
     <div class="form hidden" id="customerForm">
         <form id="addCustomer">
             <h3 id="formTitle">Add Customer</h3>
-            <input id="customerId" type="hidden"> <!-- Hidden field to store customer ID for editing -->
+            <input id="uuid" type="hidden"> <!-- Hidden field to store customer ID for editing -->
             <label for="firstName">First Name:</label>
             <input id="firstName" name="firstName" required type="text">
             <label for="lastName">Last Name:</label>
@@ -447,11 +447,11 @@
         e.preventDefault(); // Prevents the default form submission
 
         const formData = new FormData(addCustomerForm);
-        const customerId = document.getElementById('customerId').value;
-        const isEdit = !!customerId; // Check if editing an existing customer
+        const uuid = document.getElementById('uuid').value;
+        const isEdit = !!uuid; // Check if editing an existing customer
 
         const customer = {
-            customerId: isEdit ? customerId : undefined,
+            uuid: isEdit ? uuid : undefined,
             email: formData.get('email'),
             password: formData.get('password') || '',  // Include password if needed
             firstName: formData.get('firstName'),
@@ -530,7 +530,6 @@
      */
     async function fetchAndDisplayCustomers() {
         let localCustomers = [];
-        let sunbaseCustomers = [];
 
         try {
             // Attempt to fetch local customers
@@ -544,29 +543,16 @@
                 console.error('Failed to fetch local customers:', localError);
             }
 
-            // Attempt to fetch sunbase customers
-            try {
-                const sunbaseResponse = await fetch('https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list', {
-                    method: 'GET',
-                    headers: {'Authorization': `Bearer ${localStorage.getItem('access_token')}`}
-                });
-                sunbaseCustomers = await sunbaseResponse.json();
-            } catch (sunbaseError) {
-                console.error('Failed to fetch sunbase customers:', sunbaseError);
-            }
-
-            // Combine and process the customer data
-            let totalCustomers = [...localCustomers.data || [], ...sunbaseCustomers || []];
-            globalCustomers = totalCustomers;
+            globalCustomers = localCustomers.data;
 
             // Handle pagination
-            const paginatedCustomers = paginateCustomers(totalCustomers, currentPage, pageSize);
+            const paginatedCustomers = paginateCustomers(localCustomers.data, currentPage, pageSize);
             displayCustomers(paginatedCustomers);
 
             // Update pagination controls
-            updatePaginationControls(totalCustomers.length);
+            updatePaginationControls(localCustomers.data.length);
 
-            return totalCustomers;
+            return localCustomers.data;
 
         } catch (error) {
             alert('An error occurred while fetching customers.');
@@ -594,27 +580,45 @@
     function displayCustomers(customers) {
         customerTable.innerHTML = '';
 
+        if (customers.length === 1) {
+            customerTable.appendChild(createCustomerRow(customers[0]));
+            customerTable.appendChild(createSyncMessageRow());
+            return; // Exit the function early since there's nothing more to display
+        }
+
         customers.forEach(customer => {
-            const hasId = customer.customerId;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${customer.firstName || customer.first_name}</td>
-                <td>${customer.lastName || customer.last_name}</td>
-                <td>${customer.street || customer.customerAddress?.street || ''}</td>
-                <td>${customer.address || customer.customerAddress?.address || ''}</td>
-                <td>${customer.city || customer.customerAddress?.city || ''}</td>
-                <td>${customer.state || customer.customerAddress?.state || ''}</td>
-                <td>${customer.email}</td>
-                <td>${customer.phone}</td>
-                <td>
-                    ${hasId ? `
-                        <button class="action-btn edit-btn" onclick="editCustomer(${customer.customerId})">Edit</button>
-                        <button class="action-btn delete-btn" onclick="deleteCustomer(${customer.customerId})">Delete</button>
-                    ` : ''}
-                </td>
-            `;
-            customerTable.appendChild(row);
+            customerTable.appendChild(createCustomerRow(customer));
         });
+    }
+
+    function createCustomerRow(customer) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td>${customer.firstName || customer.first_name}</td>
+        <td>${customer.lastName || customer.last_name}</td>
+        <td>${customer.street || customer.customerAddress?.street || ''}</td>
+        <td>${customer.address || customer.customerAddress?.address || ''}</td>
+        <td>${customer.city || customer.customerAddress?.city || ''}</td>
+        <td>${customer.state || customer.customerAddress?.state || ''}</td>
+        <td>${customer.email}</td>
+        <td>${customer.phone}</td>
+        <td>
+            <button class="action-btn edit-btn" onclick="editCustomer('${customer.uuid}')">Edit</button>
+            <button class="action-btn delete-btn" onclick="deleteCustomer('${customer.uuid}')">Delete</button>
+        </td>`;
+        return row;
+    }
+
+    function createSyncMessageRow() {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 9; // Adjust this according to the number of columns in your table
+        cell.textContent = 'Use Sync Button To Fetch All Data';
+        cell.style.textAlign = 'center'; // Optional: to center the text
+        cell.style.fontSize = '16px';
+        cell.style.fontWeight = '800';
+        row.appendChild(cell);
+        return row;
     }
 
     /**
@@ -631,7 +635,7 @@
      * Resets the customer form to its default state.
      */
     function resetForm() {
-        document.getElementById('customerId').value = '';
+        document.getElementById('uuid').value = '';
         document.getElementById('firstName').value = '';
         document.getElementById('lastName').value = '';
         document.getElementById('street').value = '';
@@ -669,25 +673,27 @@
 
     /**
      * Edits a customer by populating the form with the customer's details.
-     * @param {number} customerId - The ID of the customer to edit.
+     * @param {string} uuid - The ID of the customer to edit.
      */
-    window.editCustomer = function (customerId) {
-        fetch(`${apiUrl}/getById?customerId=${customerId}`, {
-            method: 'GET', headers: {'Authorization': `Bearer ${jwtToken}`}
+    window.editCustomer = function (uuid) {
+        fetch(`${apiUrl}/getById?uuid=${uuid}`, {
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${jwtToken}`}
         })
             .then(response => response.json())
             .then(result => {
                 if (result.status === 200) {
                     const customer = result.data;
-                    document.getElementById('customerId').value = customer.customerId;
-                    document.getElementById('firstName').value = customer.firstName;
-                    document.getElementById('lastName').value = customer.lastName;
-                    document.getElementById('street').value = customer.street;
-                    document.getElementById('address').value = customer.address;
-                    document.getElementById('city').value = customer.city;
-                    document.getElementById('state').value = customer.state;
-                    document.getElementById('email').value = customer.email;
-                    document.getElementById('phone').value = customer.phone;
+
+                    document.getElementById('uuid').value = customer.uuid;
+                    document.getElementById('firstName').value = customer.firstName || '';
+                    document.getElementById('lastName').value = customer.lastName || '';
+                    document.getElementById('street').value = customer.customerAddress?.street || '';
+                    document.getElementById('address').value = customer.customerAddress?.address || '';
+                    document.getElementById('city').value = customer.customerAddress?.city || '';
+                    document.getElementById('state').value = customer.customerAddress?.state || '';
+                    document.getElementById('email').value = customer.email || '';
+                    document.getElementById('phone').value = customer.phone || '';
 
                     formTitle.textContent = 'Edit Customer';
                     customerForm.classList.remove('hidden');
@@ -703,26 +709,32 @@
             });
     };
 
+
     /**
      * Deletes a customer and refreshes the customer list.
-     * @param {number} customerId - The ID of the customer to delete.
+     * @param {string} uuid - The ID of the customer to delete.
      */
-    window.deleteCustomer = async function (customerId) {
+    window.deleteCustomer = async function (uuid) {
         if (!confirm("Are you sure you want to delete this customer?")) return;
 
         try {
-            const response = await fetch(`${apiUrl}/delete?customerId=${customerId}`, {
+            const response = await fetch(`${apiUrl}/delete?uuid=${uuid}`, {
                 method: 'DELETE', headers: {
                     'Authorization': `Bearer ${jwtToken}`, 'Accept': 'application/json'
                 }
             });
 
+            const result = await response.json();
+
+            if (result.status === 400) {
+                alert(result.message);
+                return;
+            }
+
             if (response.ok) {
-                alert('Customer deleted successfully!');
                 await fetchAndDisplayCustomers(); // Refresh customer list after deletion
             } else {
                 const result = await response.json();
-                alert(result.message);
             }
         } catch (error) {
             alert('An error occurred while deleting the customer.');

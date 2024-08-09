@@ -41,7 +41,7 @@ public class CustomerController {
      */
     @PutMapping("/update")
     public Response<Customer> updateCustomer(@RequestBody Customer customer) {
-        if (customerService.getCustomerById(customer.getCustomerId()).isPresent()) {
+        if (customerService.getCustomerById(customer.getUuid()).isPresent()) {
             Customer updatedCustomer = customerService.saveCustomer(customer);
             return new Response<>(updatedCustomer, "Customer updated successfully", StatusCode.CREATED);
         }
@@ -52,24 +52,31 @@ public class CustomerController {
     /**
      * Deletes a customer by their ID.
      *
-     * @param customerId The ID of the customer to be deleted.
+     * @param uuid The ID of the customer to be deleted.
      * @return A response object containing a success message.
      */
     @DeleteMapping("/delete")
-    public Response<String> deleteCustomer(@RequestParam Integer customerId) {
-        customerService.deleteCustomer(customerId);
-        return new Response<>("Customer deleted successfully", StatusCode.OK);
+    public Response<String> deleteCustomer(@RequestParam String uuid) {
+        try {
+            customerService.deleteCustomer(uuid);
+            return new Response<>("Customer deleted successfully", StatusCode.OK);
+
+        } catch (RuntimeException e) {
+            return new Response<>(e.getMessage(), StatusCode.BAD_REQUEST);
+        }
     }
 
     /**
      * Retrieves a customer by their ID.
      *
-     * @param customerId The ID of the customer to be retrieved.
+     * @param uuid The ID of the customer to be retrieved.
      * @return A response object containing the customer and a success message, or an error message if the customer is not found.
      */
     @GetMapping("/getById")
-    public Response<Customer> getCustomerById(@RequestParam Integer customerId) {
-        return customerService.getCustomerById(customerId).map(customer -> new Response<>(customer, "Customer fetched", StatusCode.OK)).orElse(new Response<>("Customer not found", StatusCode.NOT_FOUND));
+    public Response<Customer> getCustomerById(@RequestParam String uuid) {
+        return customerService.getCustomerById(uuid)
+                .map(customer -> new Response<>(customer, "Customer fetched", StatusCode.OK))
+                .orElse(new Response<>("Customer not found", StatusCode.NOT_FOUND));
     }
 
     /**
@@ -80,7 +87,9 @@ public class CustomerController {
      */
     @GetMapping("/getByEmail")
     public Response<Customer> getCustomerByEmail(@RequestParam String email) {
-        return customerService.getCustomerByEmail(email).map(customer -> new Response<>(customer, "Customer fetched", StatusCode.OK)).orElse(new Response<>("Customer not found", StatusCode.NOT_FOUND));
+        return customerService.getCustomerByEmail(email)
+                .map(customer -> new Response<>(customer, "Customer fetched", StatusCode.OK))
+                .orElse(new Response<>("Customer not found", StatusCode.NOT_FOUND));
     }
 
     /**

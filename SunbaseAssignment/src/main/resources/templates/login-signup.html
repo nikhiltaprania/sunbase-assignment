@@ -134,7 +134,6 @@
             if (result.status === 200) {
                 // If login is successful, save JWT token and redirect
                 localStorage.setItem('jwtToken', result.jwtToken);
-                await getAccessToken(); // Fetches access token
                 location.href = '/index'; // Redirects to home page
             } else {
                 alert(result.message); // Shows error message
@@ -142,38 +141,6 @@
         } catch (error) {
             alert('An error occurred during login.'); // Shows error alert
             console.error(error); // Logs the error
-        }
-
-        /**
-         * Fetches an access token and stores it in local storage.
-         * This function is called after a successful login.
-         */
-        async function getAccessToken() {
-            const url = 'https://qa.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp';
-            const data = {
-                login_id: "test@sunbasedata.com",
-                password: "Test@123"
-            };
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`); // Throws error for failed request
-                }
-
-                const result = await response.json(); // Parses JSON response
-                localStorage.setItem('access_token', result.access_token); // Stores access token
-            } catch (error) {
-                console.error('Error:', error); // Logs the error
-            }
         }
     });
 

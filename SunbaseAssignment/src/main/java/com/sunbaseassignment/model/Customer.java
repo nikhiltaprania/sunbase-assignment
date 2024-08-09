@@ -1,7 +1,9 @@
 package com.sunbaseassignment.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,10 +21,8 @@ import java.util.List;
 @ToString
 public class Customer implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer customerId;
-
     private String uuid;
+
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
