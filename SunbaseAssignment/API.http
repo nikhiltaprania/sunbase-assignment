@@ -13,7 +13,7 @@ GET https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_custome
 Authorization: Bearer dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM=
 
 ### New registration
-POST http://localhost:8080/auth/register
+POST http://localhost:8080/api/auth/register
 Content-Type: application/json
 Accept: application/json
 
@@ -32,7 +32,7 @@ Accept: application/json
 }
 
 ### Login
-POST http://localhost:8080/auth/login
+POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 Accept: application/json
 
@@ -42,7 +42,7 @@ Accept: application/json
 }
 
 ### Save Customer
-POST http://localhost:8080/customers/save
+POST http://localhost:8080/api/customers/save
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer
@@ -62,7 +62,7 @@ Authorization: Bearer
 }
 
 ### Update a customer
-PUT http://localhost:8080/customers/update
+PUT http://localhost:8080/api/customers/update
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer
@@ -83,31 +83,31 @@ Authorization: Bearer
 }
 
 ### Delete a customer
-DELETE http://localhost:8080/customers/delete?customerId=3
+DELETE http://localhost:8080/api/customers/delete?customerId=3
 Accept: application/json
 Authorization: Bearer
 
 ### Get a customer by customer id
-GET http://localhost:8080/customers/getById?customerId=2
+GET http://localhost:8080/api/customers/getById?customerId=2
 Accept: application/json
 Authorization: Bearer
 
 ### Get a customer by customer email
-GET http://localhost:8080/customers/getByEmail?email=nikhil@gmail.com
+GET http://localhost:8080/api/customers/getByEmail?email=nikhil@gmail.com
 Accept: application/json
 Authorization: Bearer
 
 ### Get all customers
-GET http://localhost:8080/customers/all
+GET http://localhost:8080/api/customers/all
 Accept: application/json
 Authorization: Bearer
 
 ### Get logged in customer
-GET http://localhost:8080/customers/current
+GET http://localhost:8080/api/customers/current
 Accept: application/json
 Authorization: Bearer
 
 ### Get customers pagewise
-GET http://localhost:8080/customers/getPageWise/1/2
+GET http://localhost:8080/api/customers/getPageWise/1/2
 Accept: application/json
 Authorization: Bearer

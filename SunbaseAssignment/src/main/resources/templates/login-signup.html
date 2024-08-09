@@ -95,6 +95,10 @@
 </div>
 
 <script>
+    /**
+     * Toggles between the login and signup forms.
+     * This function hides the currently visible form and shows the other one.
+     */
     function toggleForm() {
         const loginForm = document.getElementById('loginForm');
         const signupForm = document.getElementById('signupForm');
@@ -102,89 +106,113 @@
         signupForm.classList.toggle('hidden');
     }
 
+    // Base URL for API requests
+    const apiUrl = 'http://localhost:8080/api/auth';
 
-    const apiUrl = 'http://localhost:8080/auth';
-
+    /**
+     * Handles the login form submission.
+     * Sends login credentials to the server and processes the response.
+     */
     document.getElementById('login').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevents the default form submission
+
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
         try {
+            // Sends login credentials to the server
             const response = await fetch(`${apiUrl}/login`, {
-                method: 'POST', headers: {
+                method: 'POST',
+                headers: {
                     'Content-Type': 'application/json'
-                }, body: JSON.stringify({email, password})
+                },
+                body: JSON.stringify({email, password})
             });
 
-            const result = await response.json();
+            const result = await response.json(); // Parses JSON response
 
             if (result.status === 200) {
+                // If login is successful, save JWT token and redirect
                 localStorage.setItem('jwtToken', result.jwtToken);
-                await getAccessToken();
-                location.href = '/index';
+                await getAccessToken(); // Fetches access token
+                location.href = '/index'; // Redirects to home page
             } else {
-                alert(result.message);
+                alert(result.message); // Shows error message
             }
         } catch (error) {
-            alert('An error occurred during login.');
-            console.error(error);
+            alert('An error occurred during login.'); // Shows error alert
+            console.error(error); // Logs the error
         }
 
-        // Get access token and save to local storage
+        /**
+         * Fetches an access token and stores it in local storage.
+         * This function is called after a successful login.
+         */
         async function getAccessToken() {
             const url = 'https://qa.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp';
             const data = {
-                login_id: "test@sunbasedata.com", password: "Test@123"
+                login_id: "test@sunbasedata.com",
+                password: "Test@123"
             };
 
             try {
                 const response = await fetch(url, {
-                    method: 'POST', headers: {
-                        'Content-Type': 'application/json', 'Accept': 'application/json'
-                    }, body: JSON.stringify(data)
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! Status: ${response.status}`); // Throws error for failed request
                 }
 
-                const result = await response.json();
-                localStorage.setItem('access_token', result.access_token);
+                const result = await response.json(); // Parses JSON response
+                localStorage.setItem('access_token', result.access_token); // Stores access token
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error:', error); // Logs the error
             }
         }
     });
 
-
+    /**
+     * Handles the signup form submission.
+     * Sends signup data to the server and processes the response.
+     */
     document.getElementById('signup').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevents the default form submission
+
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const email = document.getElementById('signupEmail').value;
         const password = document.getElementById('signupPassword').value;
 
         try {
+            // Sends signup data to the server
             const response = await fetch(`${apiUrl}/register`, {
-                method: 'POST', headers: {
+                method: 'POST',
+                headers: {
                     'Content-Type': 'application/json'
-                }, body: JSON.stringify({firstName, lastName, email, password})
+                },
+                body: JSON.stringify({firstName, lastName, email, password})
             });
 
-            const result = await response.json();
+            const result = await response.json(); // Parses JSON response
 
             if (result.status === 201) {
-                alert(result.message);
-                window.location.href = "/login-signup";
+                alert(result.message); // Shows success message
+                window.location.href = "/login-signup"; // Redirects to login/signup page
             } else {
-                alert(result.message);
+                alert(result.message); // Shows error message
             }
         } catch (error) {
-            alert('An error occurred during signup.');
-            console.error(error);
+            alert('An error occurred during signup.'); // Shows error alert
+            console.error(error); // Logs the error
         }
     });
 </script>
+
 </body>
 </html>

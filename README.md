@@ -46,7 +46,7 @@ The Customer Management System is a comprehensive web application designed to ef
 ## Usage
 ### Register a New User
 
-**POST** `http://localhost:8080/auth/register`
+**POST** `http://localhost:8080/api/auth/register`
 
 **Headers:**
 - Content-Type: application/json
@@ -71,7 +71,7 @@ The Customer Management System is a comprehensive web application designed to ef
 ![Registration](/SunbaseAssignment/src/main/resources/static/project-images/registration.png)
 
 ### Login
-**POST** `http://localhost:8080/auth/login`
+**POST** `http://localhost:8080/api/auth/login`
 
 **Headers:**
 - Content-Type: application/json
@@ -88,7 +88,7 @@ The Customer Management System is a comprehensive web application designed to ef
 
 ### Add New Customer
 
-**POST** `http://localhost:8080/customers/save`
+**POST** `http://localhost:8080/api/customers/save`
 
 **Headers:**
 - Content-Type: application/json
@@ -115,7 +115,7 @@ The Customer Management System is a comprehensive web application designed to ef
 
 ### Edit a Customer
 
-**PUT** `http://localhost:8080/customers/update`
+**PUT** `http://localhost:8080/api/customers/update`
 
 **Headers:**
 - Content-Type: application/json
@@ -143,7 +143,7 @@ The Customer Management System is a comprehensive web application designed to ef
 
 ### Delete a Customer
 
-**DELETE** `http://localhost:8080/customers/delete?customerId=3`
+**DELETE** `http://localhost:8080/api/customers/delete?customerId=3`
 
 **Headers:**
 - Accept: application/json

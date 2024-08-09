@@ -1,5 +1,10 @@
 package com.sunbaseassignment.util;
 
+/**
+ * Interface defining common HTTP status codes for API responses.
+ *
+ * @author Nikhil Kumar
+ */
 public interface StatusCode {
     // Successful responses (200–299)
     int OK = 200; // Successful HTTP request.

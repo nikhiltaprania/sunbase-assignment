@@ -17,9 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling authentication-related operations such as registration and login.
+ *
+ * @author Nikhil Kumar
+ */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final CustomerService customerService;
     private final UserDetailsService userDetailsService;
@@ -27,6 +32,12 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    /**
+     * Handles the registration of a new customer.
+     *
+     * @param customer The customer object containing registration details.
+     * @return A response object containing the registered customer or an error message.
+     */
     @PostMapping("/register")
     public Response<?> register(@RequestBody Customer customer) {
         if (customer.getEmail() != null && !customer.getEmail().isEmpty() && customerService.getCustomerByEmail(customer.getEmail()).isPresent())
@@ -37,13 +48,21 @@ public class AuthController {
         return new Response<>(savedCustomer, "Registration Successful", StatusCode.CREATED);
     }
 
+    /**
+     * Handles the login process for a customer.
+     *
+     * @param customer The customer object containing login details.
+     * @return A response object containing a success message and JWT token, or an error message.
+     */
     @PostMapping("/login")
     public Response<?> login(@RequestBody Customer customer) {
         try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(customer.getEmail());
+
             if (!passwordEncoder.matches(customer.getPassword(), userDetails.getPassword()))
                 return new Response<>("Password is incorrect", StatusCode.UNAUTHORIZED);
-            if (!userDetails.isEnabled()) return new Response<>("Account is disabled !", StatusCode.UNAUTHORIZED);
+            if (!userDetails.isEnabled())
+                return new Response<>("Account is disabled !", StatusCode.UNAUTHORIZED);
             if (!userDetails.isAccountNonLocked())
                 return new Response<>("Account is locked !", StatusCode.UNAUTHORIZED);
             if (!userDetails.isAccountNonExpired())
@@ -56,6 +75,7 @@ public class AuthController {
 
             String jwtToken = jwtUtil.generateToken(userDetails);
             return new Response<>("Login Successful", StatusCode.OK, jwtToken);
+
         } catch (Exception e) {
             return new Response<>(e.getMessage(), StatusCode.UNAUTHORIZED);
         }

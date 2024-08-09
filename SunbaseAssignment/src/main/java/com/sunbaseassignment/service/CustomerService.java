@@ -13,6 +13,8 @@ public interface CustomerService {
 
     Optional<Customer> getCustomerByEmail(String email);
 
+    Customer getLoggedInCustomer();
+
     void deleteCustomer(Integer customerId);
 
     List<Customer> getAllCustomers();
