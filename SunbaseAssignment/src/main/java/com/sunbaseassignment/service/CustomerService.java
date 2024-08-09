@@ -2,6 +2,7 @@ package com.sunbaseassignment.service;
 
 import com.sunbaseassignment.model.Customer;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +20,6 @@ public interface CustomerService {
     List<Customer> getCustomerPageWise(Integer pageNo, Integer pageSize);
 
     List<Customer> saveOrUpdateInBulk(List<Customer> customers);
+
+    List<Customer> fetchDataFromServer() throws IOException;
 }
