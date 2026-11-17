@@ -36,12 +36,14 @@ The Customer Management System is a comprehensive web application designed to ef
    cd sunbase-assignment/SunbaseAssignment
    ```
 2. **Set Up the Database**
-- Create a MySQL database and update the database credentials in the `application.properties` file.
+- Create a MySQL database named `base1` (the URL in `application.properties` points to `localhost:3306/base1`, user `root`).
 
 3. **Build and Run the Application**
 
 - Open the project in your IDE (e.g., IntelliJ IDEA, Eclipse).
-- Set `spring.datasource.*` and a `jwt.key` secret in `src/main/resources/application.properties`.
+- Set two environment variables before starting the app (see `SunbaseAssignment/.env.example`; nothing is read from that file automatically):
+  - `DB_PASSWORD`: your local MySQL password (defaults to empty)
+  - `JWT_KEY`: a random secret of at least 32 characters (required; the app will not start without it). For example: `openssl rand -base64 48`
 - Build and run the Spring Boot application.
 4. **Access the Application**
 - Open your web browser and navigate to http://localhost:8080 to access the application.
