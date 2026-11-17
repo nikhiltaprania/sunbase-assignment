@@ -14,15 +14,16 @@ The Customer Management System is a comprehensive web application designed to ef
 
 ## Technologies Used
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Spring Boot
+- **Backend**: Java 21, Spring Boot, Spring Security, Spring Data JPA, JWT (jjwt)
+- **Frontend**: HTML, CSS, JavaScript, Thymeleaf
 - **Database**: MySQL
+- **Build**: Maven
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java JDK 17+
+- Java JDK 21
 - Node.js
 - MySQL
 
@@ -31,14 +32,16 @@ The Customer Management System is a comprehensive web application designed to ef
 1. **Clone the Repository**
 
    ```bash
-   https://github.com/nikhiltaprania/sunbase-assignment
+   git clone https://github.com/nikhiltaprania/sunbase-assignment.git
+   cd sunbase-assignment/SunbaseAssignment
+   ```
 2. **Set Up the Database**
 - Create a MySQL database and update the database credentials in the `application.properties` file.
 
 3. **Build and Run the Application**
 
 - Open the project in your IDE (e.g., IntelliJ IDEA, Eclipse).
-- Configure application.properties with your MySQL database credentials.
+- Set `spring.datasource.*` and a `jwt.key` secret in `src/main/resources/application.properties`.
 - Build and run the Spring Boot application.
 4. **Access the Application**
 - Open your web browser and navigate to http://localhost:8080 to access the application.
@@ -59,7 +62,7 @@ The Customer Management System is a comprehensive web application designed to ef
   "password": "Test@123",
   "firstName": "Nikhil",
   "lastName": "Taprania",
-  "phone": "9719768185",
+  "phone": "XXXXXXXXXX",
   "customerAddress": {
     "street": "Street-1",
     "address": "House No. 1",
@@ -102,7 +105,7 @@ The Customer Management System is a comprehensive web application designed to ef
   "password": "1234",
   "firstName": "Nikhil",
   "lastName": "Taprania",
-  "phone": "9719768185",
+  "phone": "XXXXXXXXXX",
   "customerAddress": {
     "street": "Street-1",
     "address": "House No. 1",
@@ -130,7 +133,7 @@ The Customer Management System is a comprehensive web application designed to ef
   "password": "1234",
   "firstName": "Shani",
   "lastName": "Taprania",
-  "phone": "9719768185",
+  "phone": "XXXXXXXXXX",
   "customerAddress": {
     "street": "Street-1",
     "address": "House No. 1",
