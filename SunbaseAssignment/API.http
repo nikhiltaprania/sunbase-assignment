@@ -22,7 +22,7 @@ Accept: application/json
   "password": "1234",
   "firstName": "Nikhil",
   "lastName": "Taprania",
-  "phone": "9719768185",
+  "phone": "XXXXXXXXXX",
   "customerAddress": {
     "street": "Street-1",
     "address": "House No. 1",
@@ -52,7 +52,7 @@ Authorization: Bearer
   "password": "1234",
   "firstName": "Nikhil",
   "lastName": "Taprania",
-  "phone": "9719768185",
+  "phone": "XXXXXXXXXX",
   "customerAddress": {
     "street": "Street-1",
     "address": "House No. 1",
@@ -73,7 +73,7 @@ Authorization: Bearer
   "password": "1234",
   "firstName": "Shani",
   "lastName": "Taprania",
-  "phone": "9719768185",
+  "phone": "XXXXXXXXXX",
   "customerAddress": {
     "street": "Street-1",
     "address": "House No. 1",
